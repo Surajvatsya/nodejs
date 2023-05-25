@@ -51,7 +51,6 @@ const userSchema = new mongoose.Schema({
 });
 const User = mongoose.model('User', userSchema);
 
-
 app.post('/register', (req, res) => {
   const { firstname, lastname, email, password } = req.body;
   
@@ -61,7 +60,7 @@ app.post('/register', (req, res) => {
       if (existingUser) {
 
         // Email already exists
-        res.json({"error " : "Email already exists"});
+        res.status(409).json({ error: 'Email already exists' });
       } else {
         // Create a new user
         const newUser = new User({ firstname, lastname, email, password });
@@ -69,17 +68,17 @@ app.post('/register', (req, res) => {
         // Save the user to the database
         newUser.save()
           .then(() => {
-            res.json(newUser);
+            res.status(201).json(newUser);
           })
           .catch(err => {
             console.log('Failed to register user', err);
-            res.json({"error " : "Failed to register user"});
+            res.status(500).json({ error: 'Failed to register user' });
           });
       }
     })
     .catch(err => {
       console.log('Failed to check email existence', err);
-      res.json({"error " : "Failed to check email existence"});
+      res.status(500).json({ error: 'Failed to check email existence' });
     });
 });
 
@@ -91,23 +90,24 @@ app.post('/login', (req, res) => {
     .then(user => {
       if (!user) {
         // User not found
-        res.render('login', { error: 'Invalid email or password' });
+        res.status(404).json({ error: 'Invalid email or password' });
       } else {
         // Check the password
         if (user.password === password) {
           // Successful login
-          res.json(user);
+          res.status(200).json(user);
         } else {
           // Incorrect password
-          res.json({"error " : "Invalid Password"});
+          res.status(401).json({ error: 'Invalid password' });
         }
       }
     })
     .catch(err => {
       console.log('Failed to login', err);
-      res.json({"error " : "Something went wrong"});
+      res.status(500).json({ error: 'Something went wrong' });
     });
 });
+
 
 app.get('/dashboard', (req, res) => {
   res.render('dashboard'); 
