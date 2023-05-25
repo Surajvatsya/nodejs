@@ -18,6 +18,7 @@ const bodyParser = require('body-parser');
 const bcrypt = require('bcryptjs');
 const mongoose = require('mongoose');
 const axios = require('axios');
+const cors = require('cors');
 
 const app = express();
 app.set('view engine', 'ejs');
@@ -30,6 +31,7 @@ app.use(session({
   resave: true,
   saveUninitialized: true
 }));
+app.use(cors());
 
 // MongoDB connection
 mongoose.connect(
